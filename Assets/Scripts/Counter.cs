@@ -14,16 +14,26 @@ public class Counter : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        CoroutineControler();
+    }
+
+    private void Stop()
+    {
+        _isCountring = false;
+        if (_conterCoroutine != null)
+        {
+            StopCoroutine(_conterCoroutine);
+            _conterCoroutine = null;
+        }
+    }
+
+    private void CoroutineControler()
+    {
+        if (Input.GetMouseButtonDown(0))
         {
             if (_isCountring)
             {
-                 _isCountring = false;
-                if(_conterCoroutine != null)
-                {
-                    StopCoroutine(_conterCoroutine);
-                    _conterCoroutine = null;
-                }
+                Stop();
             }
             else
             {
@@ -43,4 +53,4 @@ public class Counter : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
     }
-}
+} 
