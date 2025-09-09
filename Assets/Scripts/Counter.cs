@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    private float _counter = 0.5f;
+    private float _counter = 0f;
     private bool _isCountring = false;
     private Coroutine _conterCoroutine;
 
-    void Start()
+    private void Start()
     {
         Debug.Log($"Counter {_counter}");
     }
 
-    void Update()
+    private void Update()
     {
         if(Input.GetMouseButtonDown(0))
         {
