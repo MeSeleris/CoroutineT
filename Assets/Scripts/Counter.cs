@@ -3,83 +3,72 @@ using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    private ConsoleOut _consoleOut;
-    private AdderCount _adderCount;
-
-    private bool _isCounting = false;
-    private Coroutine _counterCoroutine;
+    private InputReader _inputReader;
 
     private void Start()
     {
-        _consoleOut = new ConsoleOut();
-        _adderCount = new AdderCount(0.5f);
+        _inputReader = new InputReader();
 
-        Debug.Log($"Counter {_adderCount.CurrentNumber}");
+        Debug.Log($"Counter {_inputReader.CurrentNumber}");
     }
 
     private void Update()
     {
-        GetPressButton();
+        _inputReader.GetPressButton();
     }
 
-    private void Stop()
+    private class InputReader :MonoBehaviour
     {
-        _isCounting = false;
-        if (_counterCoroutine != null)
-        {
-            StopCoroutine(_counterCoroutine);
-            _counterCoroutine = null;
-        }
-    }
+        CounterView _counterView = new CounterView();
 
-    private void GetPressButton()
-    {
-        if (Input.GetMouseButtonDown(0))
+        private bool _isCounting = false;
+        private Coroutine _counterCoroutine;
+
+        public float CurrentNumber {  get; private set; }
+
+        public void GetPressButton()
         {
-            if (_isCounting)
+            if (Input.GetMouseButtonDown(0))
             {
-                Stop();
-            }
-            else
-            {
-                _isCounting = true;
-                _counterCoroutine = StartCoroutine(CountUp());
+                if (_isCounting)
+                {
+                    Stop();
+                }
+                else
+                {
+                    _isCounting = true;
+                    _counterCoroutine = StartCoroutine(CountUp());
+                }
             }
         }
-    }
 
-    private IEnumerator CountUp()
-    {
-        while (true)
+        private void Stop()
         {
-            _adderCount.Add();
-            _consoleOut.Output(_adderCount.CurrentNumber);
+            _isCounting = false;
+            if (_counterCoroutine != null)
+            {
+                StopCoroutine(_counterCoroutine);
+                _counterCoroutine = null;
+            }
+        }
 
-            yield return new WaitForSeconds(0.5f);
+        private IEnumerator CountUp()
+        {
+            while (true)
+            {
+                CurrentNumber += 1f;
+                _counterView.Output(CurrentNumber);
+
+                yield return new WaitForSeconds(0.5f);
+            }
         }
     }
 
-    private class ConsoleOut
+    private class CounterView
     {       
         public void Output(float number)
         {         
             Debug.Log($"Counter {number}");
-        }
-    }
-
-    private class AdderCount
-    {
-        public AdderCount(float startNumber)
-        {
-            CurrentNumber = startNumber;
-        }
-
-        public float CurrentNumber { get; private set; }
-
-        public void Add()
-        {
-            CurrentNumber += 1f;
-
         }
     }
 } 
