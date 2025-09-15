@@ -1,74 +1,51 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class IntEvent : UnityEvent<int> { }
 
 public class Counter : MonoBehaviour
 {
-    private InputReader _inputReader;
+    public IntEvent onCounterUpdate;
+
+    private int count = 0;
+
+    [SerializeField] private InputReader _inputReader;
+
+    private Coroutine _coroutine;
+
+    private bool _isRunning = false;
 
     private void Start()
     {
-        _inputReader = new InputReader();
-
-        Debug.Log($"Counter {_inputReader.CurrentNumber}");
+        if(_inputReader != null)
+        {
+            _inputReader.onToggle.AddListener(ToggleCounter);
+        }
     }
 
-    private void Update()
+    private void ToggleCounter(bool shouldStart)
     {
-        _inputReader.GetPressButton();
+        if(shouldStart == true && _isRunning == false)
+        {
+            _isRunning = true;
+            _coroutine = StartCoroutine(IncrementCounter());
+        }
+        else if (shouldStart == false && _isRunning == true)
+        {
+            _isRunning= false;
+            StopCoroutine(_coroutine);
+        }
     }
 
-    private class InputReader :MonoBehaviour
+    private IEnumerator IncrementCounter()
     {
-        CounterView _counterView = new CounterView();
-
-        private bool _isCounting = false;
-        private Coroutine _counterCoroutine;
-
-        public float CurrentNumber {  get; private set; }
-
-        public void GetPressButton()
+        while(true)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (_isCounting)
-                {
-                    Stop();
-                }
-                else
-                {
-                    _isCounting = true;
-                    _counterCoroutine = StartCoroutine(CountUp());
-                }
-            }
-        }
-
-        private void Stop()
-        {
-            _isCounting = false;
-            if (_counterCoroutine != null)
-            {
-                StopCoroutine(_counterCoroutine);
-                _counterCoroutine = null;
-            }
-        }
-
-        private IEnumerator CountUp()
-        {
-            while (true)
-            {
-                CurrentNumber += 1f;
-                _counterView.Output(CurrentNumber);
-
-                yield return new WaitForSeconds(0.5f);
-            }
-        }
-    }
-
-    private class CounterView
-    {       
-        public void Output(float number)
-        {         
-            Debug.Log($"Counter {number}");
+            onCounterUpdate.Invoke(count);
+            count++;
+            yield return new WaitForSeconds(0.5f);
         }
     }
 } 
