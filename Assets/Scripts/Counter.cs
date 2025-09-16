@@ -2,40 +2,37 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
-[System.Serializable]
-public class IntEvent : UnityEvent<int> { }
-
 public class Counter : MonoBehaviour
 {
-    public IntEvent onCounterUpdate;
-
-    private int count = 0;
-
     [SerializeField] private InputReader _inputReader;
+    [SerializeField] private CounterView _counterView;
+
+    public event UnityAction CounterUpdate;  
 
     private Coroutine _coroutine;
 
-    private bool _isRunning = false;
+    public int Count { get; private set; }
 
-    private void Start()
+    private void OnEnable()
     {
-        if(_inputReader != null)
-        {
-            _inputReader.onToggle.AddListener(ToggleCounter);
-        }
+        _inputReader.Toggle += ToggleCounter;
     }
 
-    private void ToggleCounter(bool shouldStart)
+    private void OnDisable()
     {
-        if(shouldStart == true && _isRunning == false)
+        _inputReader.Toggle -= ToggleCounter;
+    }
+
+    private void ToggleCounter()
+    {
+        if(_coroutine == null)
         {
-            _isRunning = true;
             _coroutine = StartCoroutine(IncrementCounter());
         }
-        else if (shouldStart == false && _isRunning == true)
+        else if (_coroutine != null)
         {
-            _isRunning= false;
             StopCoroutine(_coroutine);
+            _coroutine = null;
         }
     }
 
@@ -43,8 +40,8 @@ public class Counter : MonoBehaviour
     {
         while(true)
         {
-            onCounterUpdate.Invoke(count);
-            count++;
+            CounterUpdate?.Invoke();
+            Count++;
             yield return new WaitForSeconds(0.5f);
         }
     }

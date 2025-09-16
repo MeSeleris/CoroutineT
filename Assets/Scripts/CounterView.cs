@@ -4,16 +4,18 @@ public class CounterView : MonoBehaviour
 {
     [SerializeField] private Counter _counter;
 
-    private void Start()
+    private void OnEnable()
     {
-        if(_counter != null)
-        {
-            _counter.onCounterUpdate.AddListener(UpdateView);
-        }
+        _counter.CounterUpdate += UpdateView;
     }
 
-    private void UpdateView(int value)
+    private void OnDisable()
     {
-        Debug.Log($"Counter: {value}");
+        _counter.CounterUpdate += UpdateView;
+    }
+
+    public void UpdateView()
+    {
+        Debug.Log($"Counter: {_counter.Count}");
     }
 }

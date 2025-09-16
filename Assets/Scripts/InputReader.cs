@@ -1,20 +1,17 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-[System.Serializable]
-public class BoolEvent : UnityEvent<bool> { }
 public class InputReader : MonoBehaviour
 {
-    public BoolEvent onToggle;
+    private const int _CommandGetPressMouseButton = 0;
 
-    private bool _isRunning = false;
+    public event UnityAction Toggle;
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(_CommandGetPressMouseButton))
         {
-            _isRunning = !_isRunning;
-            onToggle.Invoke(_isRunning);
+            Toggle?.Invoke();
         }
     }
 }
