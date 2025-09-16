@@ -3,13 +3,13 @@ using UnityEngine.Events;
 
 public class InputReader : MonoBehaviour
 {
-    private const int _CommandGetPressMouseButton = 0;
+    private const int CommandGetPressMouseButton = 0;
 
     public event UnityAction Toggle;
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(_CommandGetPressMouseButton))
+        if (Input.GetMouseButtonDown(CommandGetPressMouseButton))
         {
             Toggle?.Invoke();
         }

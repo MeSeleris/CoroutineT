@@ -5,10 +5,10 @@ using UnityEngine.Events;
 public class Counter : MonoBehaviour
 {
     [SerializeField] private InputReader _inputReader;
-    [SerializeField] private CounterView _counterView;
 
-    public event UnityAction CounterUpdate;  
+    public event UnityAction CounterUpdate;
 
+    private float _delay = 0.5f;
     private Coroutine _coroutine;
 
     public int Count { get; private set; }
@@ -38,11 +38,13 @@ public class Counter : MonoBehaviour
 
     private IEnumerator IncrementCounter()
     {
-        while(true)
+        WaitForSeconds _wait = new WaitForSeconds(_delay);
+
+        while (enabled)
         {
             CounterUpdate?.Invoke();
             Count++;
-            yield return new WaitForSeconds(0.5f);
+            yield return _wait;
         }
     }
 } 
